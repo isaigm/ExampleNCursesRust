@@ -10,7 +10,7 @@ fn count_neighbors(grid : [[u8; MAX_COLS]; MAX_ROWS], i : i32, j : i32) -> i32{
     let mut not_dead_cells = 0;
     for i1 in i-1..i+2{
         for j1 in j-1..j+2{
-            if i1 < 0 || i1 >= MAX_ROWS as i32 || j1 < 0 || j1 >= MAX_COLS as i32{
+            if i1 < 0 || i1 >= MAX_ROWS as i32 || j1 < 0 || j1 >= MAX_COLS as i32 || (i1 == i && j1 == j){
                 continue;
             }else{
                 if grid[i1 as usize][j1 as usize] == 1{
