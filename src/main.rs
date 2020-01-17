@@ -5,7 +5,8 @@ use std::time::Duration;
 
 const MAX_ROWS : usize = 30;
 const MAX_COLS : usize = 80;
-fn count_neighbors(grid : [[u8; MAX_COLS]; MAX_ROWS], i : i32, j : i32) -> i32{
+
+fn count_neighbors(grid : &[[u8; MAX_COLS]; MAX_ROWS], i : i32, j : i32) -> i32{
     let mut not_dead_cells = 0;
     for i1 in i-1..i+2{
         for j1 in j-1..j+2{
@@ -20,7 +21,7 @@ fn count_neighbors(grid : [[u8; MAX_COLS]; MAX_ROWS], i : i32, j : i32) -> i32{
     }
     return not_dead_cells;
 }
-fn draw_cells(grid : [[u8; MAX_COLS]; MAX_ROWS]){
+fn draw_cells(grid : &[[u8; MAX_COLS]; MAX_ROWS]){
     let space : chtype = chtype::from(' ');
     let cell: chtype = chtype::from('*');
     for i in 0..MAX_ROWS {
@@ -39,7 +40,7 @@ fn draw_cells(grid : [[u8; MAX_COLS]; MAX_ROWS]){
 fn step(grid : &mut[[u8; MAX_COLS]; MAX_ROWS], aux : &mut[[u8; MAX_COLS]; MAX_ROWS]){
     for i in 0..MAX_ROWS {
         for j in 0..MAX_COLS{
-            let not_dead_cells = count_neighbors(*grid, i as i32, j as i32);
+            let not_dead_cells = count_neighbors(grid, i as i32, j as i32);
             if grid[i][j] == 1{
                 if !(not_dead_cells == 2 || not_dead_cells == 3){
                     aux[i][j] = 0;
@@ -79,7 +80,7 @@ fn main() {
             break;
         }
         step( &mut grid,  &mut aux);
-        draw_cells(grid);
+        draw_cells(&grid);
         thread::sleep(delay);
     }
     endwin();
