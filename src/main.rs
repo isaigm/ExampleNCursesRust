@@ -30,7 +30,7 @@ fn draw_cells(grid : [[u8; MAX_COLS]; MAX_ROWS]){
             match grid[i][j]{
                 0 => mvaddch((i+5) as i32, (j+35) as i32, space),
                 1 => mvaddch((i+5) as i32, (j+35) as i32, cell),
-                _ => continue,
+                _ => continue
             };
             attroff(COLOR_PAIR(0) | A_BOLD());
             refresh();
@@ -70,13 +70,18 @@ fn main() {
     initscr();
     curs_set(CURSOR_VISIBILITY::CURSOR_INVISIBLE);
     start_color();
+    noecho();
+    nodelay(stdscr(), true);
     init_pair(1, COLOR_RED, COLOR_BLACK);
     let delay  = Duration::from_millis(250);
     loop{
+        let ch = getch();
+        if ch == 27{
+            break;
+        }
         draw_cells(grid);
         step( &mut grid,  &mut aux);
         thread::sleep(delay);
     }
-    getch();
     endwin();
 }
