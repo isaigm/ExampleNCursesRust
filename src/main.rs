@@ -1,6 +1,9 @@
 extern crate ncurses;
 use rand::*;
 use ncurses::*;
+use std::thread;
+use std::time::Duration;
+
 const MAX_ROWS : usize = 30;
 const MAX_COLS : usize = 80;
 fn count_neighbors(grid : [[u8; MAX_COLS]; MAX_ROWS], i : i32, j : i32) -> i32{
@@ -68,9 +71,11 @@ fn main() {
     curs_set(CURSOR_VISIBILITY::CURSOR_INVISIBLE);
     start_color();
     init_pair(1, COLOR_RED, COLOR_BLACK);
+    let delay  = Duration::from_millis(250);
     loop{
-        step( &mut grid,  &mut aux);
         draw_cells(grid);
+        step( &mut grid,  &mut aux);
+        thread::sleep(delay);
     }
     getch();
     endwin();
