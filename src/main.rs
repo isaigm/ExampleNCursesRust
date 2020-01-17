@@ -1,4 +1,3 @@
-extern crate ncurses;
 use rand::*;
 use ncurses::*;
 use std::thread;
