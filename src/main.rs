@@ -3,14 +3,14 @@ use rand::*;
 use ncurses::*;
 const MAX_ROWS : usize = 30;
 const MAX_COLS : usize = 80;
-fn count_neighbors(grid : [[u8; MAX_COLS]; MAX_ROWS], i : usize, j : usize) -> i32{
+fn count_neighbors(grid : [[u8; MAX_COLS]; MAX_ROWS], i : i32, j : i32) -> i32{
     let mut not_dead_cells = 0;
     for i1 in i-1..i+2{
         for j1 in j-1..j+2{
-            if (i1 > 0 && i1 < MAX_ROWS) || (j1 > 0 && j1 < MAX_COLS){
+            if i1 < 0 || i1 >= MAX_ROWS as i32 || j1 < 0 || j1 >= MAX_COLS as i32{
                 continue;
             }else{
-                if grid[i1][j1] == 1{
+                if grid[i1 as usize][j1 as usize] == 1{
                     not_dead_cells += 1;
                 }
             }
@@ -34,8 +34,26 @@ fn draw_cells(grid : [[u8; MAX_COLS]; MAX_ROWS]){
         }
     }
 }
-fn step(grid : [[u8; MAX_COLS]; MAX_ROWS], aux : [[u8; MAX_COLS]; MAX_ROWS]){
-
+fn step(grid : &mut[[u8; MAX_COLS]; MAX_ROWS], aux : &mut[[u8; MAX_COLS]; MAX_ROWS]){
+    for i in 0..MAX_ROWS {
+        for j in 0..MAX_COLS{
+            let not_dead_cells = count_neighbors(*grid, i as i32, j as i32);
+            if grid[i][j] == 1{
+                if !(not_dead_cells == 2 || not_dead_cells == 3){
+                    aux[i][j] = 0;
+                }
+            }else{
+                if not_dead_cells == 3{
+                    aux[i][j] = 1;
+                }
+            }
+        }
+    }
+    for i in 0..MAX_ROWS {
+        for j in 0..MAX_COLS{
+            grid[i][j] = aux[i][j];
+        }
+    }
 }
 fn main() {
     let mut grid = [[0 as u8; MAX_COLS] ; MAX_ROWS];
@@ -50,7 +68,10 @@ fn main() {
     curs_set(CURSOR_VISIBILITY::CURSOR_INVISIBLE);
     start_color();
     init_pair(1, COLOR_RED, COLOR_BLACK);
-    draw_cells(grid);
+    loop{
+        step( &mut grid,  &mut aux);
+        draw_cells(grid);
+    }
     getch();
     endwin();
 }
