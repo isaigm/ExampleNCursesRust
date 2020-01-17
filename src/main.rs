@@ -5,7 +5,7 @@ use std::time::Duration;
 
 const MAX_ROWS : usize = 30;
 const MAX_COLS : usize = 80;
-type Cells =  [[u8; MAX_COLS]; MAX_ROWS];
+type Cells = [[u8; MAX_COLS]; MAX_ROWS];
 
 fn count_neighbors(grid : &Cells, i : i32, j : i32) -> i32{
     let mut not_dead_cells = 0;
