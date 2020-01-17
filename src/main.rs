@@ -79,8 +79,8 @@ fn main() {
         if ch == 27{
             break;
         }
-        draw_cells(grid);
         step( &mut grid,  &mut aux);
+        draw_cells(grid);
         thread::sleep(delay);
     }
     endwin();
