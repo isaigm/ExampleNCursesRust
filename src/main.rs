@@ -68,7 +68,7 @@ impl Game{
         }
     }
     fn game_loop(&mut self){
-        let delay  = Duration::from_millis(250);
+        let delay  = Duration::from_millis(180);
         loop{
             let ch = getch();
             if ch == 27{
@@ -86,14 +86,13 @@ impl Game{
     fn new() -> Game{
         let mut grid = [[0 as u8; MAX_COLS] ; MAX_ROWS];
         let mut aux =  [[0 as u8; MAX_COLS] ; MAX_ROWS];
-        let current_generations = 0;
         for i in 0..MAX_ROWS {
             for j in 0..MAX_COLS{
                 grid[i][j] = rand::thread_rng().gen_range(0, 2);
                 aux[i][j] = grid[i][j];
             }
         }
-        Game {grid, aux, current_generations}
+        Game {grid, aux, current_generations : 0}
     }
 }
 fn main() {
