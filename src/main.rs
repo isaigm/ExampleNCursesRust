@@ -31,17 +31,16 @@ impl Game{
     }
     fn draw_cells(&self){
         let space : chtype = chtype::from(' ');
-        let cell: chtype = chtype::from('*');
+        let cell: chtype = chtype::from('^');
         attron(COLOR_PAIR(1) | A_BOLD());
         for i in 0..MAX_ROWS {
             for j in 0..MAX_COLS{
                 match self.grid[i][j]{
                     0 => mvaddch((i+5) as i32, (j+35) as i32, space),
                     1 => mvaddch((i+5) as i32, (j+35) as i32, cell),
-                    _ => continue
+                    _ => continue,
                 };
             }
-
         }
         refresh();
         attroff(COLOR_PAIR(1) | A_BOLD());
@@ -64,11 +63,22 @@ impl Game{
         }
     }
     fn game_loop(&mut self){
-        let delay  = Duration::from_millis(180);
+        let delay  = Duration::from_millis(140);
+        const RESET : i32 = 'r' as i32;
         loop{
             let ch = getch();
-            if ch == 27{
-                break;
+            match ch{
+                27 => break,
+                RESET => {
+                    for i in 0..MAX_ROWS {
+                        for j in 0..MAX_COLS{
+                            self.grid[i][j] = rand::thread_rng().gen_range(0, 2);
+                            self.aux[i][j] = self.grid[i][j];
+                        }
+                    }
+                    self.current_generations = 0;
+                },
+                _ => (),
             }
             self.step();
             wrefresh(stdscr());
