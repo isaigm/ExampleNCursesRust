@@ -5,7 +5,9 @@ use std::time::Duration;
 
 const MAX_ROWS : usize = 30;
 const MAX_COLS : usize = 80;
+
 type Cells = [[u8; MAX_COLS]; MAX_ROWS];
+
 struct Game{
     grid : Cells,
     aux : Cells,
