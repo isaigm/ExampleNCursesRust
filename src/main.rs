@@ -11,6 +11,7 @@ type Cells = [[u8; MAX_COLS]; MAX_ROWS];
 struct Game{
     grid : Cells,
     aux : Cells,
+    current_generations : usize,
 }
 impl Game{
     fn count_neighbors(&mut self, i : i32, j : i32) -> i32{
@@ -31,18 +32,19 @@ impl Game{
     fn draw_cells(&self){
         let space : chtype = chtype::from(' ');
         let cell: chtype = chtype::from('*');
+        attron(COLOR_PAIR(1) | A_BOLD());
         for i in 0..MAX_ROWS {
             for j in 0..MAX_COLS{
-                attron(COLOR_PAIR(1) | A_BOLD());
                 match self.grid[i][j]{
                     0 => mvaddch((i+5) as i32, (j+35) as i32, space),
                     1 => mvaddch((i+5) as i32, (j+35) as i32, cell),
                     _ => continue
                 };
-                attroff(COLOR_PAIR(0) | A_BOLD());
-                refresh();
             }
+
         }
+        refresh();
+        attroff(COLOR_PAIR(1) | A_BOLD());
     }
     fn step(&mut self){
         for i in 0..MAX_ROWS {
@@ -73,20 +75,25 @@ impl Game{
                 break;
             }
             self.step();
+            wrefresh(stdscr());
             self.draw_cells();
+            mvprintw(10, 120, format!("Current generations: {}", self.current_generations).as_str());
+            refresh();
             thread::sleep(delay);
+            self.current_generations += 1;
         }
     }
     fn new() -> Game{
         let mut grid = [[0 as u8; MAX_COLS] ; MAX_ROWS];
         let mut aux =  [[0 as u8; MAX_COLS] ; MAX_ROWS];
+        let mut current_generations = 0;
         for i in 0..MAX_ROWS {
             for j in 0..MAX_COLS{
                 grid[i][j] = rand::thread_rng().gen_range(0, 2);
                 aux[i][j] = grid[i][j];
             }
         }
-        Game {grid, aux}
+        Game {grid, aux, current_generations}
     }
 }
 fn main() {
