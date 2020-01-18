@@ -86,7 +86,7 @@ impl Game{
     fn new() -> Game{
         let mut grid = [[0 as u8; MAX_COLS] ; MAX_ROWS];
         let mut aux =  [[0 as u8; MAX_COLS] ; MAX_ROWS];
-        let mut current_generations = 0;
+        let current_generations = 0;
         for i in 0..MAX_ROWS {
             for j in 0..MAX_COLS{
                 grid[i][j] = rand::thread_rng().gen_range(0, 2);
