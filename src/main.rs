@@ -3,8 +3,8 @@ use ncurses::*;
 use std::thread;
 use std::time::Duration;
 
-const MAX_ROWS : usize = 30;
-const MAX_COLS : usize = 80;
+const MAX_ROWS : usize = 40;
+const MAX_COLS : usize = 90;
 
 type Cells = [[u8; MAX_COLS]; MAX_ROWS];
 
@@ -36,8 +36,8 @@ impl Game{
         for i in 0..MAX_ROWS {
             for j in 0..MAX_COLS{
                 match self.grid[i][j]{
-                    0 => mvaddch((i+5) as i32, (j+35) as i32, space),
-                    1 => mvaddch((i+5) as i32, (j+35) as i32, cell),
+                    0 => mvaddch((i+2) as i32, (j+25) as i32, space),
+                    1 => mvaddch((i+2) as i32, (j+25) as i32, cell),
                     _ => continue,
                 };
             }
@@ -82,7 +82,9 @@ impl Game{
             self.step();
             clear();
             self.draw_cells();
-            mvprintw(10, 120, format!("Current generations: {}", self.current_generations).as_str());
+            mvprintw(2, 120, format!("Current generations: {}", self.current_generations).as_str());
+            mvprintw(4, 120, "r for restart");
+            mvprintw(6, 120, "ESC for exit");
             wrefresh(stdscr());
             thread::sleep(delay);
             self.current_generations += 1;
