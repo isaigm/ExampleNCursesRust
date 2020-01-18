@@ -50,14 +50,10 @@ impl Game{
         for i in 0..MAX_ROWS {
             for j in 0..MAX_COLS{
                 let not_dead_cells = self.count_neighbors(i as i32, j as i32);
-                if self.grid[i][j] == 1{
-                    if !(not_dead_cells == 2 || not_dead_cells == 3){
-                        self.aux[i][j] = 0;
-                    }
-                }else{
-                    if not_dead_cells == 3{
-                        self.aux[i][j] = 1;
-                    }
+                match self.grid[i][j] {
+                    0 if not_dead_cells == 3 => self.aux[i][j] = 1,
+                    1 if !(not_dead_cells == 2 || not_dead_cells == 3) => self.aux[i][j] = 0,
+                    _ => continue,
                 }
             }
         }
