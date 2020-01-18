@@ -62,7 +62,7 @@ impl Game{
         }
     }
     fn game_loop(&mut self){
-        let delay  = Duration::from_millis(140);
+        let delay  = Duration::from_millis(100);
         const RESET : i32 = 'r' as i32;
         loop{
             let ch = getch();
@@ -105,9 +105,10 @@ fn main() {
     initscr();
     curs_set(CURSOR_VISIBILITY::CURSOR_INVISIBLE);
     start_color();
+    keypad(stdscr(), true);
     noecho();
     nodelay(stdscr(), true);
-    init_pair(1, COLOR_RED, COLOR_BLACK);
+    init_pair(1, COLOR_GREEN, COLOR_BLACK);
     game.game_loop();
     endwin();
 }
