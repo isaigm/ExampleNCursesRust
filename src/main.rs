@@ -42,7 +42,6 @@ impl Game{
                 };
             }
         }
-        refresh();
         attroff(COLOR_PAIR(1) | A_BOLD());
     }
     fn step(&mut self){
@@ -81,10 +80,10 @@ impl Game{
                 _ => (),
             }
             self.step();
-            wrefresh(stdscr());
+            clear();
             self.draw_cells();
             mvprintw(10, 120, format!("Current generations: {}", self.current_generations).as_str());
-            refresh();
+            wrefresh(stdscr());
             thread::sleep(delay);
             self.current_generations += 1;
         }
