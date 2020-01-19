@@ -90,7 +90,7 @@ impl Game{
             self.current_generations += 1;
         }
     }
-    fn new() -> Game{
+    fn new() -> Self{
         let mut grid = [[0 as u8; MAX_COLS] ; MAX_ROWS];
         let mut aux =  [[0 as u8; MAX_COLS] ; MAX_ROWS];
         for i in 0..MAX_ROWS {
@@ -99,7 +99,7 @@ impl Game{
                 aux[i][j] = grid[i][j];
             }
         }
-        Game {grid, aux, current_generations : 0}
+        Self {grid, aux, current_generations : 0}
     }
 }
 fn main() {
