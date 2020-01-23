@@ -31,7 +31,7 @@ impl Game{
     }
     fn draw_cells(&self){
         let space : chtype = chtype::from(' ');
-        let cell: chtype = chtype::from('^');
+        let cell: chtype = chtype::from('0');
         attron(COLOR_PAIR(1) | A_BOLD());
         for i in 0..MAX_ROWS {
             for j in 0..MAX_COLS{
@@ -64,6 +64,8 @@ impl Game{
     fn game_loop(&mut self){
         let delay  = Duration::from_millis(100);
         const RESET : i32 = 'r' as i32;
+        let mut info = newwin(15, 30, 2, 120);
+        nodelay(info, true);
         loop{
             let ch = getch();
             match ch{
@@ -82,13 +84,17 @@ impl Game{
             self.step();
             clear();
             self.draw_cells();
-            mvprintw(2, 120, format!("Current generations: {}", self.current_generations).as_str());
-            mvprintw(4, 120, "r for restart");
-            mvprintw(6, 120, "ESC for exit");
+            mvwprintw(info, 1, 1, format!("Current generations: {}", self.current_generations).as_str());
+            mvwprintw(info, 4, 1, "r for restart");
+            mvwprintw(info, 7, 1, "ESC for exit");
+            box_(stdscr(), 0, 0);
+            box_(info, 0, 0);
             wrefresh(stdscr());
+            wrefresh(info);
             thread::sleep(delay);
             self.current_generations += 1;
         }
+        delwin(info);
     }
     fn new() -> Self{
         let mut grid = [[0 as u8; MAX_COLS] ; MAX_ROWS];
@@ -110,7 +116,9 @@ fn main() {
     keypad(stdscr(), true);
     noecho();
     nodelay(stdscr(), true);
-    init_pair(1, COLOR_GREEN, COLOR_BLACK);
+    init_color(2, 600, 600, 0);
+    init_pair(1, 2, COLOR_BLACK);
     game.game_loop();
     endwin();
+
 }
