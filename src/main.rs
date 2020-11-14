@@ -8,13 +8,29 @@ const MAX_COLS : usize = 90;
 
 type Cells = [[u8; MAX_COLS]; MAX_ROWS];
 
+fn to_digits(mut n: u32, arr: &mut Vec<u8>){
+    while n > 0{
+        arr.push((n % 10) as u8);
+        n /= 10;
+    }
+}
+fn search(n: u8, arr: &Vec<u8>) -> bool{
+    for e in arr.iter(){
+        if *e == n {
+            return true;
+        }
+    }
+    return false;
+}
 struct Game{
     grid : Cells,
     aux : Cells,
+    dead_rules: Vec<u8>,
+    alive_rules: Vec<u8>,
     current_generations : usize,
 }
 impl Game{
-    fn count_neighbors(&mut self, i : i32, j : i32) -> i32{
+    fn count_neighbors(&mut self, i : i32, j : i32) -> u8{
         let mut not_dead_cells = 0;
         for i1 in i-1..i+2{
             for j1 in j-1..j+2{
@@ -49,8 +65,8 @@ impl Game{
             for j in 0..MAX_COLS{
                 let not_dead_cells = self.count_neighbors(i as i32, j as i32);
                 self.aux[i][j]  = match self.grid[i][j] {
-                    0 if not_dead_cells == 3 => 1,
-                    1 if !(not_dead_cells == 2 || not_dead_cells == 3) => 0,
+                    0 if search(not_dead_cells, &self.alive_rules) => 1,
+                    1 if !search(not_dead_cells, &self.dead_rules) => 0,
                     _ => continue,
                 }
             }
@@ -64,19 +80,14 @@ impl Game{
     fn game_loop(&mut self){
         let delay  = Duration::from_millis(100);
         const RESET : i32 = 'r' as i32;
-        let mut info = newwin(15, 30, 2, 120);
+        let info = newwin(15, 30, 2, 120);
         nodelay(info, true);
         loop{
             let ch = getch();
             match ch{
                 27 => break,
                 RESET => {
-                    for i in 0..MAX_ROWS {
-                        for j in 0..MAX_COLS{
-                            self.grid[i][j] = rand::thread_rng().gen_range(0, 2);
-                            self.aux[i][j] = self.grid[i][j];
-                        }
-                    }
+                    self.fill_random();
                     self.current_generations = 0;
                 },
                 _ => (),
@@ -96,20 +107,34 @@ impl Game{
         }
         delwin(info);
     }
-    fn new() -> Self{
-        let mut grid = [[0 as u8; MAX_COLS] ; MAX_ROWS];
-        let mut aux =  [[0 as u8; MAX_COLS] ; MAX_ROWS];
-        for i in 0..MAX_ROWS {
+    fn fill_random(&mut self){
+        let max_cells = MAX_COLS * MAX_ROWS / 10;
+        for i in 0..MAX_ROWS{
             for j in 0..MAX_COLS{
-                grid[i][j] = rand::thread_rng().gen_range(0, 2);
-                aux[i][j] = grid[i][j];
+                self.grid[i][j] = 0;
+                self.aux[i][j] = 0;
             }
         }
-        Self {grid, aux, current_generations : 0}
+        for _ in 0..max_cells{
+            let i = rand::thread_rng().gen_range(0, MAX_ROWS);
+            let j = rand::thread_rng().gen_range(0, MAX_COLS);
+            self.grid[i][j] = rand::thread_rng().gen_range(0, 2);
+            self.aux[i][j] = self.grid[i][j];
+        }
+    }
+    fn new(r1: u32, r2: u32) -> Self{
+        let grid = [[0 as u8; MAX_COLS] ; MAX_ROWS];
+        let aux =  [[0 as u8; MAX_COLS] ; MAX_ROWS];
+        let mut alive_rules: Vec<u8> = Vec::new();
+        let mut dead_rules: Vec<u8> = Vec::new();
+        to_digits(r1, &mut alive_rules);
+        to_digits(r2, &mut dead_rules);
+        Self {grid, dead_rules, alive_rules, aux, current_generations : 0}
     }
 }
 fn main() {
-    let mut game = Game::new();
+    let mut game = Game::new(3, 23);
+    game.fill_random();
     initscr();
     curs_set(CURSOR_VISIBILITY::CURSOR_INVISIBLE);
     start_color();
@@ -120,5 +145,4 @@ fn main() {
     init_pair(1, 2, COLOR_BLACK);
     game.game_loop();
     endwin();
-
 }
